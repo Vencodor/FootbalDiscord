@@ -26,3 +26,5 @@ dist/*
 build/*
 *.log
 .DS_Store
+
+config.json
