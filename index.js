@@ -10,7 +10,7 @@ const client = new Client({ intents: [
 ]});
  
 client.once(Events.ClientReady, readyClient => {
-console.log(`Ready! Logged in as ${readyClient.user.tag}`);
+console.log(`Logged in as ${readyClient.user.tag}`);
 });
 
 client.on('messageCreate', (message) => {
@@ -18,26 +18,34 @@ client.on('messageCreate', (message) => {
 })
 
 let gamesList = [];
-
+const title = '실시간 방 목록';
 
 client.on('ready', async () => {
     const channel = client.channels.cache.find(ch => ch.name.includes('실시간'));
     if (!channel) return console.error('Channel not found');
 
-    const messages = await channel.messages.fetch({ limit: 10 });
-    let existingMessage = messages.find(msg => msg.embeds.length > 0 && msg.embeds[0].title === '실시간 축구 방 목록');
+    const messages = await channel.messages.fetch({ limit: 30 });
+    let existingMessage = messages.find(msg => msg.embeds.length > 0 && msg.embeds[0].title === title);
 
     if (!existingMessage) {
-        existingMessage = channel.send({ embeds: [createEmbed()] })
+        channel.send({ embeds: [createEmbed()] })
+        messages = await channel.messages.fetch({ limit: 3 });
+        existingMessage = messages.find(msg => msg.embeds.length > 0 && msg.embeds[0].title === title);
     }
 
     setInterval(async () => {
         const allRooms = await getRooms();
         //console.log(allRooms)
-        gamesList = allRooms.filter(room => room.country == 'KR' && room.mode_ga == 'f');
+        gamesList = allRooms.filter(room => room.country == 'KR');
 
         existingMessage.edit({ embeds: [createEmbed()] });
-    }, 1000*5);
+    }, 1000*15);
+
+    setInterval(async () => {
+        channel.send({ embeds: [createEmbed()] });
+        messages = await channel.messages.fetch({ limit: 3 });
+        existingMessage = messages.find(msg => msg.embeds.length > 0 && msg.embeds[0].title === title);
+    }, 1000 * 60 * 60 * 5);
 });
 
  async function getRooms() {
@@ -57,19 +65,40 @@ client.on('ready', async () => {
 function createEmbed() {
     const embed = new EmbedBuilder()
         .setColor(0x0099FF)
-        .setTitle('실시간 축구 방 목록')
-        .setDescription('실시간 한국 축구 방 목록을 나타냅니다')
+        .setTitle(title)
+        .setDescription('실시간 방 목록을 나타냅니다')
         .setTimestamp();
 
-    gamesList.forEach(game => {
-        embed.addFields({ 
-            name: game.roomname+(game.password == 1 ? ' (locked)' : ''), 
-            value: `Player **${game.players}/${game.maxplayers}**`, 
-            inline: false 
+        gamesList.forEach(game => {
+            embed.addFields({
+                name: game.roomname+` (${formatGamemode(game.mode_ga)})`+(game.password == 1 ? ' (잠김)' : ''),
+                value: `Player **${game.players}/${game.maxplayers}**`,
+                inline: false
+            });
         });
-    });
 
     return embed;
+}
+
+function formatGamemode(gamemode) {
+    switch(gamemode) {
+        case 'f':
+            return 'Football';
+        case 'bs':
+            return 'Simple';
+        case 'ard':
+            return 'Death Arrows';
+        case 'ar':
+            return 'Arrows';
+        case 'sp':
+            return 'Grapple';
+        case 'v':
+            return 'VTOL';
+        case 'b':
+            return 'Classic';
+        default:
+            return 'Unknown';
+    }
 }
 
 client.login(token);
