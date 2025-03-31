@@ -855,9 +855,10 @@ const createBot = function(options) {
             });
         },
         getRoomAddress: async function(id) {
+
             var url = "https://bonk2.io/scripts/getroomaddress.php";
             var data = `id=${id}`;
-        
+            
             return new Promise((resolve, reject) => {
                 axios.post(url, data)
                 .then(function (response) {

@@ -20,34 +20,47 @@ client.on('messageCreate', (message) => {
 let bot = null;
 
 let gamesList = [];
-const title = '실시간 방 목록';
+const title = '실시간 Bonk 방 목록';
 
 client.on('ready', async () => {
-    const channel = client.channels.cache.find(ch => ch.name.includes('실시간'));
-    if (!channel) return console.error('Channel not found');
+    const channels = client.channels.cache.filter(ch => ch.name.includes('실시간'));
+    if(channels.size > 0) {
+        for(const channel of channels.values()) {
+            let messages = await channel.messages.fetch({ limit: 3 });
+            let existingMessage = messages.find(msg => msg.embeds.length > 0 && msg.embeds[0].title === title);
 
-    let messages = await channel.messages.fetch({ limit: 10 });
-    let existingMessage = messages.find(msg => msg.embeds.length > 0 && msg.embeds[0].title === title);
+            if (!existingMessage) {
+                channel.send({ embeds: [createEmbed()] })
+                messages = await channel.messages.fetch({ limit: 3 });
+                existingMessage = messages.find(msg => msg.embeds.length > 0 && msg.embeds[0].title === title);
+            }
 
-    if (!existingMessage) {
-        channel.send({ embeds: [createEmbed()] })
-        messages = await channel.messages.fetch({ limit: 3 });
-        existingMessage = messages.find(msg => msg.embeds.length > 0 && msg.embeds[0].title === title);
+            setInterval(async () => {
+                channel.send({ embeds: [createEmbed()] });
+                messages = await channel.messages.fetch({ limit: 3 });
+                existingMessage = messages.find(msg => msg.embeds.length > 0 && msg.embeds[0].title === title);
+            }, 1000 * 60 * 60 * 5);
+
+            setInterval(async () => {
+                existingMessage.edit({ embeds: [createEmbed()] });
+            }, 1000 * 20);
+        }
+
+        setInterval(async () => {
+            const allRooms = await getRooms();
+            gamesList = allRooms.filter(room => room.country == 'KR');
+        }, 1000*30);
+
+        setInterval(async () => {
+            try {
+                const allRooms = await getRooms();
+                gamesList = allRooms.filter(room => room.country == 'KR');
+                await updatePlayers();
+            } catch (error) {
+                console.error('Error fetching rooms:', error);
+            }
+        }, 1000*60*3);
     }
-
-    setInterval(async () => {
-        const allRooms = await getRooms();
-        gamesList = allRooms.filter(room => room.country == 'KR');
-        await updatePlayers();
-
-        existingMessage.edit({ embeds: [createEmbed()] });
-    }, 1000*100);
-
-    setInterval(async () => {
-        channel.send({ embeds: [createEmbed()] });
-        messages = await channel.messages.fetch({ limit: 3 });
-        existingMessage = messages.find(msg => msg.embeds.length > 0 && msg.embeds[0].title === title);
-    }, 1000 * 60 * 60 * 5);
 });
 
 async function updatePlayers() {
@@ -56,7 +69,7 @@ async function updatePlayers() {
             const room = gamesList[i];
             if (room.players < room.maxplayers && room.password == 0) {
             await getRoomData(room);
-            await new Promise(resolve => setTimeout(resolve, 1000*3));
+            await new Promise(resolve => setTimeout(resolve, 500));
             }
         }
     }
@@ -98,7 +111,7 @@ function createEmbed() {
 async function getRoomData(room) {
     bot = BonkBot.createBot({
         account: {
-            username: "New Player",
+            username: "Gemini",
             password: "",
             guest: true,
         },
