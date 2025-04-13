@@ -16,6 +16,7 @@ console.log(`Logged in as ${readyClient.user.tag}`);
 let globalMessages = [];
 let bot = null;
 let botToken = null;
+let lastUpdateTime = null;
 
 const reload = new ButtonBuilder()
     .setCustomId('reload')
@@ -76,8 +77,17 @@ client.on('interactionCreate', async (interaction) => {
     let existingMsg = await channel.messages.fetch(target.id)
 
     if(!existingMsg) return;
+    if (lastUpdateTime && (new Date() - lastUpdateTime) < 1000 * 60) {
+        existingMsg.edit({ embeds: [createRoomsEmbed()]});
+        interaction.reply({ content: "갱신되었습니다" });
+        setTimeout(() => {
+            interaction.deleteReply();
+        }, (1000*60)-(lastUpdateTime && (new Date() - lastUpdateTime)));
+        return;
+    }
 
-    interaction.reply({ content: "플레이어 정보를 갱신중입니다. 잠시만 기다려주세요.."});
+    lastUpdateTime = new Date()
+    interaction.reply({ content: "플레이어 정보를 갱신중입니다. 잠시만 기다려주세요.." });
     existingMsg.edit({ embeds: [createRoomsEmbed()], components: [] });
 
     const allRooms = await getRooms();
@@ -187,7 +197,9 @@ async function getRoomData(room) {
                 existingRoom.users = bot.game.players.filter(player => player.here && player.username && player.username != botName).map(player => player.username);
                 //console.log(gamesList.find(g => g.roomname === room.roomname));
             }
-            bot.disconnect();
+            setTimeout(() => {
+                bot.disconnect();
+            }, 100);
         })
     })
 

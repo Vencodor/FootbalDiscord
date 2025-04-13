@@ -1200,7 +1200,7 @@ const createBot = function(options) {
         },
         disconnect: async function() {
             this.connected = false;
-            this.socket.removeAllListeners();
+            //this.socket.removeAllListeners();
             if (this.socket) {
                 //this.socket.send("42[14]")
                 this.socket.close();
