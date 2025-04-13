@@ -1106,7 +1106,7 @@ const createBot = function(options) {
                     break;
                 case "ratelimit":
                     if(data.limit == "banned"){
-                        bot.events.emit("banned")
+                        this.events.emit("banned")
                     } else {
                         console.log("limited, "+data.limit)
                         this.events.emit("ratelimit", data.limit)

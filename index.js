@@ -78,9 +78,10 @@ client.on('interactionCreate', async (interaction) => {
     if(!existingMsg) return;
     if (lastUpdateTime && (new Date() - lastUpdateTime) < 1000 * 60) {
         existingMsg.edit({ embeds: [createRoomsEmbed()]});
+        interaction.reply({ content: "캐시된 정보를 바탕으로 갱신하였습니다." })
         setTimeout(() => {
             interaction.deleteReply().catch();
-        }, (1000*60)-(lastUpdateTime && (new Date() - lastUpdateTime)));
+        }, 1000 * 10);
         return;
     }
 
@@ -93,8 +94,10 @@ client.on('interactionCreate', async (interaction) => {
 
     try {
         await updatePlayers().then(() => {
-            existingMsg.edit({ embeds: [createRoomsEmbed()]});
-            interaction.editReply({ content: "플레이어 정보 갱신 완료!"});
+            setTimeout(() => {
+                existingMsg.edit({ embeds: [createRoomsEmbed()]});
+                interaction.editReply({ content: "플레이어 정보 갱신 완료!"}).catch();
+            }, 1000 * 3);
         });
     } catch(error) {
         console.error('Error updating players:', error);
@@ -116,7 +119,6 @@ async function updatePlayers() {
                 const room = gamesList[i];
                 if (room.players < room.maxplayers && room.password == 0) {
                     getRoomData(room);
-                    //await new Promise(resolve => setTimeout(resolve, 1000));
                 }
             } catch (error) {
                 continue;
