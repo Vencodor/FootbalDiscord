@@ -1146,7 +1146,7 @@ const createBot = function(options) {
                     this.connected = true;
                     this.events.emit('connect');
                     this.keepAlive();
-                }, 150);
+                }, 200);
             });
             this.socket.addEventListener("message", (e) => {
                 let message = self.parseSocket(e.data)
