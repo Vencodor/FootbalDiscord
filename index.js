@@ -199,7 +199,7 @@ async function getRoomData(room) {
             }
             setTimeout(() => {
                 bot.disconnect();
-            }, 100);
+            }, 10);
         })
     })
 

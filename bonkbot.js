@@ -1136,17 +1136,16 @@ const createBot = function(options) {
             this.socket = new WebSocket(this.socketAddr);
 
             this.socket.addEventListener("open", () => {
-                this.connected = true;
-                this.events.emit('connect');
-                this.keepAlive();
-
-                // Ensure messages are sent only after the connection is open
                 setTimeout(() => {
-                    self.socket.send(`2probe`);
-                    self.socket.send(`5`);
-                    self.socket.send(self.timesync());
-                    self.joinRoom(self);
-                }, 0);
+                    this.socket.send(`2probe`);
+                    this.socket.send(`5`);
+                    this.socket.send(self.timesync());
+                    this.joinRoom(self);
+
+                    this.connected = true;
+                    this.events.emit('connect');
+                    this.keepAlive();
+                }, 100);
             });
             this.socket.addEventListener("message", (e) => {
                 let message = self.parseSocket(e.data)
