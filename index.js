@@ -14,7 +14,6 @@ console.log(`Logged in as ${readyClient.user.tag}`);
 });
 
 let globalMessages = [];
-let bot = null;
 let botToken = null;
 let lastUpdateTime = null;
 
@@ -80,7 +79,7 @@ client.on('interactionCreate', async (interaction) => {
     if (lastUpdateTime && (new Date() - lastUpdateTime) < 1000 * 60) {
         existingMsg.edit({ embeds: [createRoomsEmbed()]});
         setTimeout(() => {
-            interaction.deleteReply();
+            interaction.deleteReply().catch();
         }, (1000*60)-(lastUpdateTime && (new Date() - lastUpdateTime)));
         return;
     }
@@ -103,7 +102,7 @@ client.on('interactionCreate', async (interaction) => {
     }
     
     setTimeout(() => {
-        interaction.deleteReply();
+        interaction.deleteReply().catch();
         existingMsg.edit({ embeds: [createRoomsEmbed()], components: [btnRow] });
     }, 1000 * 60);
 
@@ -116,8 +115,8 @@ async function updatePlayers() {
             try {
                 const room = gamesList[i];
                 if (room.players < room.maxplayers && room.password == 0) {
-                    await getRoomData(room);
-                    await new Promise(resolve => setTimeout(resolve, 1000));
+                    getRoomData(room);
+                    //await new Promise(resolve => setTimeout(resolve, 1000));
                 }
             } catch (error) {
                 continue;
@@ -172,7 +171,7 @@ const botName = "lnstagram_";
 const password = "1324qqww";
 
 async function getRoomData(room) {
-    bot = BonkBot.createBot({
+    let bot = BonkBot.createBot({
         account: {
             username: botName,
             password: password,
@@ -202,7 +201,7 @@ async function getRoomData(room) {
         })
     })
 
-    connect(room)
+    connect(room,bot)
 }
 
 async function getCacheToken(username, password) {
@@ -223,7 +222,7 @@ async function getToken(username, password) {
     return responseToken.data.token;
 }
 
-async function connect(room) {
+async function connect(room, bot) {
     const addr = await bot.getRoomAddress(room.id) 
 
     let serv = {}
