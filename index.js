@@ -79,7 +79,6 @@ client.on('interactionCreate', async (interaction) => {
     if(!existingMsg) return;
     if (lastUpdateTime && (new Date() - lastUpdateTime) < 1000 * 60) {
         existingMsg.edit({ embeds: [createRoomsEmbed()]});
-        interaction.reply({ content: "갱신되었습니다" });
         setTimeout(() => {
             interaction.deleteReply();
         }, (1000*60)-(lastUpdateTime && (new Date() - lastUpdateTime)));
