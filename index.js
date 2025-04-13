@@ -117,7 +117,7 @@ async function updatePlayers() {
                 const room = gamesList[i];
                 if (room.players < room.maxplayers && room.password == 0) {
                     await getRoomData(room);
-                    await new Promise(resolve => setTimeout(resolve, 500));
+                    await new Promise(resolve => setTimeout(resolve, 1000));
                 }
             } catch (error) {
                 continue;
