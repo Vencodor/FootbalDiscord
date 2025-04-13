@@ -792,7 +792,7 @@ const createBot = function(options) {
             if(options.address == undefined){ throw new Error("address is undefined") }
             if(options.account.guest == undefined){ options.account.guest = true }
 
-            if(options.token == undefined){ if(options.account.guest != true){ throw new Error(`No token provided and is not a guest!`)} }
+            if(options.account.token == undefined){ if(options.account.guest != true){ throw new Error(`No token provided and is not a guest!`)} }
             options.peerid = Math.random().toString(36).substr(2, 10) + 'v00000'
             if(options.account.username == undefined){options.account.username = `Robot${Math.random().toString().substr(2, 5)}`}
             if(options.roompassword == undefined){options.roompassword = "";}
@@ -802,7 +802,7 @@ const createBot = function(options) {
                 let joinPacket = `42[13,{"joinID":"${options.address}","roomPassword":"${options.roompassword}","guest":true,"dbid":2,"version":44,"peerID":"${options.peerid}","bypass":"","guestName":"${options.account.username}","avatar":{"layers":[${options.skin}],"bc":${options.basecolor}}}]`
                 this.socket.send(joinPacket)
             } else {
-                let joinPacket = `42[13,{"joinID":"${options.address}","roomPassword":"${options.roompassword}","guest":false,"dbid":2,"version":44,"peerID":"${options.peerid}","bypass":"","token":"${options.token}","avatar":{"layers":[${options.skin}],"bc":${options.basecolor}}}]`
+                let joinPacket = `42[13,{"joinID":"${options.address}","roomPassword":"${options.roompassword}","guest":false,"dbid":2,"version":44,"peerID":"${options.peerid}","bypass":"","token":"${options.account.token}","avatar":{"layers":[${options.skin}],"bc":${options.basecolor}}}]`
                 this.socket.send(joinPacket)
             }
         },
@@ -1136,13 +1136,17 @@ const createBot = function(options) {
             this.socket = new WebSocket(this.socketAddr);
 
             this.socket.addEventListener("open", () => {
-                self.socket.send(`2probe`)
-                self.socket.send(`5`)
-                self.socket.send(self.timesync())
-                self.joinRoom(self)
-                this.connected = true
-                this.events.emit('connect')
-                this.keepAlive()
+                this.connected = true;
+                this.events.emit('connect');
+                this.keepAlive();
+
+                // Ensure messages are sent only after the connection is open
+                setTimeout(() => {
+                    self.socket.send(`2probe`);
+                    self.socket.send(`5`);
+                    self.socket.send(self.timesync());
+                    self.joinRoom(self);
+                }, 0);
             });
             this.socket.addEventListener("message", (e) => {
                 let message = self.parseSocket(e.data)
