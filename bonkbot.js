@@ -895,9 +895,9 @@ const createBot = function(options) {
             if (message == "41") {
                 return `{"type":"41"}`
             }
+            try {
             if (JSON.parse(message.substring(2))) {
                 var message = JSON.parse(message.substring(2))
-                try {
                     function switchyswitch(message){
                         switch (message[0]) {
                             case 1:
@@ -1004,11 +1004,12 @@ const createBot = function(options) {
                         return `{"type":"none"}`
                     }
                     return JSON.parse(switchyswitch(message))
-                } catch (error) {
-                    console.log(switchyswitch(message))
-                    console.log(`Err: ${error}\nBonkbot: Probably just a json parsing error, you can ignore this.`)
-                    return `{"type":"none"}`
                 }
+            }
+            catch (error) {
+                console.log(switchyswitch(message))
+                console.log(`Err: ${error}\nBonkbot: Probably just a json parsing error, you can ignore this.`)
+                return `{"type":"none"}`
             }
         },
         autoHandlePacket: function (data) {
@@ -1145,7 +1146,7 @@ const createBot = function(options) {
                     this.connected = true;
                     this.events.emit('connect');
                     this.keepAlive();
-                }, 100);
+                }, 150);
             });
             this.socket.addEventListener("message", (e) => {
                 let message = self.parseSocket(e.data)
