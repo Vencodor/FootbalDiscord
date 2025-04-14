@@ -206,9 +206,15 @@ async function getRoomData(room) {
     connect(room,bot)
 }
 
+let lastTokenUpdate = null;
 async function getCacheToken(username, password) {
     if(botToken == null) {
         botToken = await getToken(username, password);
+        lastTokenUpdate = new Date();
+    }
+    if (lastTokenUpdate && (new Date() - lastTokenUpdate) > 1000 * 60 * 60 * 3) {
+        botToken = await getToken(username, password);
+        lastTokenUpdate = new Date();
     }
     return botToken;
 }
