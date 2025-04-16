@@ -93,18 +93,15 @@ client.on('interactionCreate', async (interaction) => {
     gamesList = allRooms.filter(room => room.country == 'KR');
 
     try {
-        updatePlayers(() => {existingMsg.edit({ embeds: [createRoomsEmbed()]});}).then(() => {
-            setTimeout(() => {
-                interaction.editReply({ content: "플레이어 정보 갱신 완료!"}).catch();
-            });
-        });
+        await updatePlayers(() => {existingMsg.edit({ embeds: [createRoomsEmbed()]});})
     } catch(error) {
-        console.error('Error updating players:', error);
-        interaction.reply({ content: "플레이어 정보 갱신 실패. 나중에 다시 시도해주세요"}).catch();
-        setTimeout(() => {
-            interaction.deleteReply().catch();
-        }, 1000 * 10);
+        console.log("Error updating players");
     }
+    interaction.editReply({ content: "플레이어 정보 갱신 완료!"}).catch(
+        (err) => {
+            interaction.reply({ content: "플레이어 정보 갱신 완료!" });
+        }
+    );
     
     setTimeout(() => {
         interaction.deleteReply().catch();
