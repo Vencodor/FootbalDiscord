@@ -93,7 +93,7 @@ client.on('interactionCreate', async (interaction) => {
     gamesList = allRooms.filter(room => room.country == 'KR');
 
     try {
-        updatePlayers(existingMsg.edit({ embeds: [createRoomsEmbed()]})).then(() => {
+        updatePlayers(() => {existingMsg.edit({ embeds: [createRoomsEmbed()]});}).then(() => {
             setTimeout(() => {
                 interaction.editReply({ content: "플레이어 정보 갱신 완료!"}).catch();
             });
