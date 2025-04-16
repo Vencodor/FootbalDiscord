@@ -100,7 +100,10 @@ client.on('interactionCreate', async (interaction) => {
         });
     } catch(error) {
         console.error('Error updating players:', error);
-        interaction.editReply({ content: "플레이어 정보 갱신 실패. 나중에 다시 시도해주세요"});
+        interaction.reply({ content: "플레이어 정보 갱신 실패. 나중에 다시 시도해주세요"}).catch();
+        setTimeout(() => {
+            interaction.deleteReply().catch();
+        }, 1000 * 10);
     }
     
     setTimeout(() => {
