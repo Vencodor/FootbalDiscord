@@ -117,7 +117,7 @@ async function updatePlayers(callback) {
             try {
                 const room = gamesList[i];
                 if (room.players < room.maxplayers && room.password == 0) {
-                    await getRoomData(room).then(callback());
+                    await getRoomData(room, callback);
                 }
             } catch (error) {
                 continue;
@@ -170,7 +170,7 @@ function createRoomsEmbed() {
 const botName = "lnstagram_";
 const password = "1324qqww";
 
-async function getRoomData(room) {
+async function getRoomData(room, callback) {
     let bot = BonkBot.createBot({
         account: {
             username: botName,
@@ -195,6 +195,7 @@ async function getRoomData(room) {
                 existingRoom.users = bot.game.players.filter(player => player.here && player.username && player.username != botName).map(player => player.username);
                 //console.log(gamesList.find(g => g.roomname === room.roomname));
             }
+            callback()
             setTimeout(() => {
                 bot.disconnect();
             }, 500);
