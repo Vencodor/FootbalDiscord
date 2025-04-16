@@ -93,10 +93,10 @@ client.on('interactionCreate', async (interaction) => {
     gamesList = allRooms.filter(room => room.country == 'KR');
 
     try {
-        await updatePlayers(existingMsg.edit({ embeds: [createRoomsEmbed()]})).then(() => {
+        updatePlayers(existingMsg.edit({ embeds: [createRoomsEmbed()]})).then(() => {
             setTimeout(() => {
                 interaction.editReply({ content: "플레이어 정보 갱신 완료!"}).catch();
-            }, 1000 * 3);
+            });
         });
     } catch(error) {
         console.error('Error updating players:', error);
@@ -117,9 +117,8 @@ async function updatePlayers(callback) {
             try {
                 const room = gamesList[i];
                 if (room.players < room.maxplayers && room.password == 0) {
-                    await getRoomData(room);
+                    await getRoomData(room).then(callback());
                 }
-                callback()
             } catch (error) {
                 continue;
             }
@@ -145,8 +144,7 @@ function createWelcomeEmbed() {
     const embed = new EmbedBuilder()
         .setColor(0x4af640)
         .setTitle("사용설명서")
-        .setDescription('Bonk.io의 실시간 한국 방 목록을 나타내는 봇입니다.\n\n방의 정보는 <이름>(플레이어)(잠김여부) 로 표시됩니다.\n또한 방 목록은 30초마다 갱신되며\n메시지의 맨 아래쪽에 마지막 갱신 일자가 표시됩니다.\n"플레이어 정보 갱신"버튼을 통해 접속한 플레이어 목록을 확인할 수 있습니다.(쿨타임 60초)')
-        .setTimestamp();
+        .setDescription('Bonk.io의 실시간 한국 방 목록을 나타내는 봇입니다.\n\n방의 정보는 <이름>(플레이어)(잠김여부) 로 표시됩니다.\n또한 방 목록은 30초마다 갱신되며\n메시지의 맨 아래쪽에 마지막 갱신 일자가 표시됩니다.\n"플레이어 정보 갱신"버튼을 통해 접속한 플레이어 목록을 확인할 수 있습니다.(쿨타임 60초)');
 
     return embed;
 }
