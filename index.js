@@ -117,7 +117,7 @@ async function updatePlayers(callback) {
             try {
                 const room = gamesList[i];
                 if (room.players < room.maxplayers && room.password == 0) {
-                    await getRoomData(room, callback);
+                    getRoomData(room, callback);
                 }
             } catch (error) {
                 continue;
