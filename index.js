@@ -99,7 +99,7 @@ client.on('interactionCreate', async (interaction) => {
     }
     interaction.editReply({ content: "플레이어 정보 갱신 완료!"}).catch(
         (err) => {
-            interaction.reply({ content: "플레이어 정보 갱신 완료!" });
+            interaction.reply({ content: "플레이어 정보 갱신 완료!" }).catch();
         }
     );
     
