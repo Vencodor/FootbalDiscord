@@ -97,14 +97,15 @@ client.on('interactionCreate', async (interaction) => {
     } catch(error) {
         console.log("Error updating players");
     }
-    interaction.editReply({ content: "플레이어 정보 갱신 완료!"}).catch(
-        (err) => {
-            interaction.reply({ content: "플레이어 정보 갱신 완료!" }).catch();
-        }
-    );
-    
+
+    try {
+        interaction.editReply({ content: "플레이어 정보 갱신 완료!"})
+    } catch(error) {
+        interaction.reply({ content: "플레이어 정보 갱신 완료!" })
+    }
+
     setTimeout(() => {
-        interaction.deleteReply().catch();
+        interaction.deleteReply()
         existingMsg.edit({ embeds: [createRoomsEmbed()], components: [btnRow] });
     }, 1000 * 60);
 
