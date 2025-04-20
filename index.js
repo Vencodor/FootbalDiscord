@@ -86,7 +86,8 @@ client.on('interactionCreate', async (interaction) => {
     }
 
     lastUpdateTime = new Date()
-    interaction.reply({ content: "플레이어 정보를 갱신중입니다. 잠시만 기다려주세요.." });
+    await interaction.deferReply();
+    await interaction.reply({ content: "플레이어 정보를 갱신중입니다. 잠시만 기다려주세요.." });
     existingMsg.edit({ embeds: [createRoomsEmbed()], components: [] });
 
     const allRooms = await getRooms();
@@ -99,7 +100,7 @@ client.on('interactionCreate', async (interaction) => {
     }
 
     try {
-        interaction.editReply({ content: "플레이어 정보 갱신 완료!"})
+        await interaction.editReply({ content: "플레이어 정보 갱신 완료!"})
     } catch(error) {
         interaction.reply({ content: "플레이어 정보 갱신 완료!" })
     }
