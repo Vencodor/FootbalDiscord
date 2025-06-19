@@ -69,6 +69,7 @@ client.on('ready', async () => {
                 id: msg.id
             });
         });
+        channel.send({ embeds: [createPlayerInfoDescriptionEmbed()] });
     }
 
     setInterval(async () => {
@@ -85,7 +86,7 @@ client.on('ready', async () => {
             console.error('Error fetching when updating');
         }
         
-        for (const msgs of globalMessages) {
+        for (const msgs of globalMessages) { //방 목록 갱신
             let channel = await client.channels.cache.find(ch => ch.id == msgs.channel);
             let existingMsg = await channel.messages.fetch(msgs.id);
             if (!existingMsg) continue;
@@ -93,6 +94,16 @@ client.on('ready', async () => {
             existingMsg.edit({ embeds: [createRoomsEmbed()]});
         }
     }, 1000*30);
+
+    setInterval(async () => {
+        for (const msgs of globalInfoMessages) { //플레이어 정보란 갱신
+            let channel = await client.channels.cache.find(ch => ch.id == msgs.channel);
+            let existingMsg = await channel.messages.fetch(msgs.id);
+            if (!existingMsg) continue;
+
+            existingMsg.edit({ embeds: [createPlayerInfoEmbed()]});
+        }
+    }, 1000 * 60 * 5)
 });
 
 client.on('interactionCreate', async (interaction) => {
@@ -182,9 +193,16 @@ async function getRooms() {
 function createWelcomeEmbed() {
     const embed = new EmbedBuilder()
         .setColor(0x4af640)
-        .setTitle("사용설명서")
+        .setTitle("방 목록 사용설명서")
         .setDescription('Bonk.io의 실시간 한국 방 목록을 나타내는 봇입니다.\n\n방의 정보는 <이름>(플레이어)(잠김여부) 로 표시됩니다.\n또한 방 목록은 30초마다 갱신되며\n메시지의 맨 아래쪽에 마지막 갱신 일자가 표시됩니다.\n"플레이어 정보 갱신"버튼을 통해 접속한 플레이어 목록을 확인할 수 있습니다.(쿨타임 60초)');
+    return embed;
+}
 
+function createPlayerInfoDescriptionEmbed() {
+    const embed = new EmbedBuilder()
+        .setColor(0x00ffae)
+        .setTitle("유저 정보 사용설명서")
+        .setDescription(`유저의 레벨과 마지막 접속 시간을 나타냅니다.\n정보는 방 새로고침 버튼으로 함께 갱신됩니다.`);
     return embed;
 }
 
@@ -208,7 +226,7 @@ function createRoomsEmbed() {
 
 function createPlayerInfoEmbed() {
     const embed = new EmbedBuilder()
-        .setColor(0x4af640)
+        .setColor(0x00ffae)
         .setTitle("Player Information")
         .setTimestamp();
 
@@ -231,7 +249,7 @@ function createPlayerInfoEmbed() {
 
                 embed.addFields({
                     name: p.username + ` lv.${p.level}`,
-                    value: `마지막 접속: ` + (days>0?`${days}일`:``) + (hours>0?` ${hours}시`:``) +` ${minutes}분전`,
+                    value: `마지막 접속: ` + (days>0?`${days}일`:``) + (hours>0?` ${hours}시간`:``) +` ${minutes}분`+`전`,
                     inline: false
                 });
             }
