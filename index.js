@@ -246,10 +246,12 @@ function createPlayerInfoEmbed() {
                 let hours = Math.floor((diff / 60) % 24);
                 diff = diff / 60
                 let days = Math.floor(diff / 24);
+                
+                console.log(`` + (days>0?`${days}일`:``) + (hours>0?` ${hours}시간`:``) +` ${minutes}분`+`전 접속`)
 
                 embed.addFields({
                     name: p.username + ` lv.${p.level}`,
-                    value: `마지막 접속: ` + (days>0?`${days}일`:``) + (hours>0?` ${hours}시간`:``) +` ${minutes}분`+`전`,
+                    value: `` + (days>0?`${days}일`:``) + (hours>0?` ${hours}시간`:``) +` ${minutes}분`+`전 접속`,
                     inline: false
                 });
             }
