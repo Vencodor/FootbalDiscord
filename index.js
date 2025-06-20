@@ -194,7 +194,7 @@ async function getRooms() {
 
 function createWelcomeEmbed() {
     const embed = new EmbedBuilder()
-        .setColor(0x4af640)
+        .setColor(0xff8206)
         .setTitle("방 목록 사용설명서")
         .setDescription('Bonk.io의 실시간 한국 방 목록을 나타내는 봇입니다.\n\n방의 정보는 <이름>(플레이어)(잠김여부) 로 표시됩니다.\n또한 방 목록은 30초마다 갱신되며\n메시지의 맨 아래쪽에 마지막 갱신 일자가 표시됩니다.\n"플레이어 정보 갱신"버튼을 통해 접속한 플레이어 목록을 확인할 수 있습니다.(쿨타임 60초)');
     return embed;
@@ -210,7 +210,7 @@ function createPlayerInfoDescriptionEmbed() {
 
 function createRoomsEmbed() {
     const embed = new EmbedBuilder()
-        .setColor(0x4af640)
+        .setColor(0xff8206)
         .setTitle("Live Bonk Rooms")
         .setTimestamp();
 
@@ -250,7 +250,7 @@ function createPlayerInfoEmbed() {
         let days = Math.floor(diff / 24);
 
         playersString += `**` + p.username + `** lv.${p.level}\n`
-        playersString += `` + (days > 0 ? `${days}d` : ``) + (hours > 0 ? ` ${hours}h` : ``) + ` ${minutes}m` + `ago\n`
+        playersString += `` + (days > 0 ? `${days}d` : ``) + (hours > 0 ? ` ${hours}h` : ``) + ` ${minutes}m` + ` ago\n`
     }
     embed.setDescription(playersString || 'No Data Available');
 
