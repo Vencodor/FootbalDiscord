@@ -204,7 +204,7 @@ function createPlayerInfoDescriptionEmbed() {
     const embed = new EmbedBuilder()
         .setColor(0x00ffae)
         .setTitle("유저 정보 사용설명서")
-        .setDescription(`유저의 레벨과 마지막 접속 시간을 나타냅니다.\n정보는 방 새로고침 버튼으로 함께 갱신됩니다.`);
+        .setDescription(`유저의 레벨과 마지막 접속 시간을 나타냅니다.\n정보는 방 새로고침 버튼으로 함께 갱신됩니다.\n그리운 유저의 근황을 알아보세요!`);
     return embed;
 }
 
@@ -304,6 +304,7 @@ async function getRoomData(room, callback) {
                     }
                 }
             })
+            playerRecord = playerRecord.sort((a, b) => a.level - b.level);
             fs.writeFileSync(recordFile, JSON.stringify(playerRecord, null, 2));
 
             //const randomSentence = sentences[Math.floor(Math.random() * sentences.length)].trim();
